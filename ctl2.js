@@ -35,7 +35,7 @@ var needleCurrentAngle;
 var needleInitialAngle;
 
 function preload() {
-  //laserSound = loadSound('mpthreetest.mp3');
+  //laserSound = loadSound('laser.wav');
 }
 
 function setup() {
@@ -390,7 +390,7 @@ function mousePressed() {
 	  letterAlpha = 0;
 	  capturedLetters = capturedLetters + randomLetter;
   }
-  if (  (mouseX-displayWidth*0.29)**2 + (mouseY - displayHeight*0.93)**2 < (displayHeight*0.035)**2   ) {
+  if (  pow((mouseX-displayWidth*0.29),2) + pow((mouseY - displayHeight*0.93),2) < pow((displayHeight*0.035),2)   ) {
 	  lettersGo = true;
 	  roundStartTime = t;
   }
