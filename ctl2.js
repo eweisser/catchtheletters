@@ -1,4 +1,3 @@
-var circleLog = [];
 var t = 0;
 var initX = -20;
 var initY = -20;
@@ -7,7 +6,6 @@ var endX = 1910;
 var endY = 1040;
 var letterCurrentPosX = 0;
 var letterCurrentPosY = 0;
-var randomBaseSize = 0;
 
 var redVal = 222;
 var greenVal = 222;
@@ -25,8 +23,6 @@ var capturedLetters = '';
 var radarCenterX;
 var radarCenterY;
 
-var laserSound;
-
 var lettersGo;
 var roundStartTime;
 
@@ -34,9 +30,11 @@ var needleTargetAngle;
 var needleCurrentAngle;
 var needleInitialAngle;
 
+var laserSound;
+
 function preload() {
-  //laserSound = loadSound('laser.wav');
-}
+    laserSound = loadSound('laser.wav');
+    }
 
 function setup() {
     createCanvas(displayWidth, displayHeight);
@@ -382,8 +380,6 @@ if (lettersGo == true) {
 }
 
 function mousePressed() {
-  //littleList = [];
-  //circleLog.push(littleList);
   fireTime = t;
   //if (abs(letterCurrentPosX-mouseX) < 50 && abs(letterCurrentPosY-mouseY < 50) && (mouseY < displayHeight*0.84)  ) {		// old target zone
   if (abs(letterCurrentPosX+textSize()/4-mouseX) < 50 && abs(letterCurrentPosY-textSize()/4-mouseY < 50) && (mouseY < displayHeight*0.84)  ) {
@@ -394,5 +390,5 @@ function mousePressed() {
 	  lettersGo = true;
 	  roundStartTime = t;
   }
-  //laserSound.play();
+  laserSound.play();
 }
