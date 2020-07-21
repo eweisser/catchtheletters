@@ -9,8 +9,8 @@ var t = 0;
 var initX = -20;
 var initY = -20;
 var randomInitEdge = 0;
-var endX = displayWidth;
-var endY = displayHeight;
+var endX = 1910;
+var endY = 1040;
 var letterCurrentPosX = 0;
 var letterCurrentPosY = 0;
 
