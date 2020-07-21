@@ -1,9 +1,16 @@
+// issues: hit zone is weird shooting below the letters -- solved, I think
+            // multiple hits on the same letter -- solved
+            // letters staying hidden under the console -- solved, I think
+            // clear the bank after restarting the game
+            // some console art needs to be resized
+            // occasionally letters moving from top to bottom disappear before they hit bottom
+
 var t = 0;
 var initX = -20;
 var initY = -20;
 var randomInitEdge = 0;
-var endX = 1910;
-var endY = 1040;
+var endX = displayWidth;
+var endY = displayHeight;
 var letterCurrentPosX = 0;
 var letterCurrentPosY = 0;
 
@@ -31,33 +38,35 @@ var needleCurrentAngle;
 var needleInitialAngle;
 
 var laserSound;
+var blastSound;
 
 function preload() {
     laserSound = loadSound('laser.wav');
+    blastSound = loadSound('tankblast.wav');
     }
 
 function setup() {
     createCanvas(displayWidth, displayHeight);
 	frameRate(50);
 	
-	if (randomInitEdge == 0) {
-		initY = -20;
-		endY = displayHeight * 0.9;
+	if (randomInitEdge == 0) {         // if letter starts from the top of the screen...
+		initY = -20;                      // initial vertical position is 20 above the window
+		endY = displayHeight * 0.9;       // destination vertical position is 90% of the window height
 	}
-	else if (randomInitEdge == 1) {
-		initX = displayWidth;
-		endX = -20;
+	else if (randomInitEdge == 1) {    // if letter starts from the right side of the screen...
+		initX = displayWidth;             // initial horizontal position is the right edge of the window
+		endX = -20;                       // destination horizontal position is 20 left of the left side of the window
 	}
-	else if (randomInitEdge == 2) {
-		initY = displayHeight*0.9;
-		endY = -20;
+	else if (randomInitEdge == 2) {    // if letter starts from the bottom of the screen...
+		initY = displayHeight*0.9;        // initial vertical position is 90% of the way down the window
+		endY = -20;                       // destination vertical position is 20 above the top of the window
 	}
-	else {
-		initX = -20;
-		endX = displayWidth;
+	else {                         // if letter starts from the left side of the screen...
+		initX = -20;                  // initial horizontal position is 20 left of the left side of the window
+		endX = displayWidth;          // destination horizontal position is the right edge of the window
 	}
 
-	letterCurrentPosX = initX;
+	letterCurrentPosX = initX;         // set the active letter's current position to be the initial position, since it hasn't moved yet
 	letterCurrentPosY = initY;
 	
 	wildLetterSize = (Math.random()*100+100);	//size 100 to 200
@@ -81,16 +90,16 @@ function draw() {
 	
 	textFont('Courier');
 	
-if (lettersGo == true) {	
+if (lettersGo == true) {        // if the user has pressed the START button
 	
 	
 	
-	if (abs(letterCurrentPosX-endX) < 10 && abs(letterCurrentPosY-endY < 10)) {
+	if (abs(letterCurrentPosX-endX) < 10 && abs(letterCurrentPosY-endY < 10)) {        // if the letter has reached (or almost reached) its destination...we need to send a new letter!
 		
-		letterAlpha = 255;
+		letterAlpha = 255;                        // set the letter's visibility (opacity) to visible
 		
-		randomLetterDecimal = Math.random();
-		if (randomLetterDecimal < 0.1202) {
+		randomLetterDecimal = Math.random();      // a random number used to determine which letter the new letter will be
+		if (randomLetterDecimal < 0.1202) {           // we'll use frequency distribution
 		  randomLetter = 'e';
 		}
 		else if (randomLetterDecimal < 0.2112) {
@@ -177,32 +186,38 @@ if (lettersGo == true) {
 		stroke(redVal,greenVal,blueVal,255);
 		fill(redVal,greenVal,blueVal,255);
 		
-		initX = Math.random()*1910;
-		initY = Math.random()*1076;
-		endX = Math.random()*1910;
-		endY = Math.random()*1076;
-		randomInitEdge = random([0,1,2,3]);
-		if (randomInitEdge == 0) {		// starts at top, moves down
+		initX = Math.random()*displayWidth;
+		initY = Math.random()*displayHeight;
+		endX = Math.random()*displayWidth;
+		endY = Math.random()*displayHeight;
+		randomInitEdge = random([0,1,2,3]);       // choosing from 0, 1, 2, 3 randomly to determine which side of the screen the letter will start from
+		if (randomInitEdge == 0) {		// starts at top, moves down. We'll re-determine initY and endY, but hold onto the predetermined initX and endX
 			initY = -20;
-			endY = displayHeight*0.9;
+			endY = displayHeight;
 		}
-		else if (randomInitEdge == 1) {		// starts at right, moves left
+		else if (randomInitEdge == 1) {
 			initX = displayWidth;
 			endX = -20;
+            if (initY > displayHeight*0.7) {            // this prevents paths from being too much under the console
+                endY = Math.random()*displayHeight*0.6;
+            }
 		}
 		else if (randomInitEdge == 2) {		// starts at bottom, moves up
-			initY = displayHeight*0.9;
+			initY = displayHeight;
 			endY = -20;
 		}
 		else {			// starts at left, moves right
 			initX = -20;
 			endX = displayWidth;
+            if (initY > displayHeight*0.7) {            // this prevents paths from being too much under the console
+                endY = Math.random()*displayHeight*0.6;
+            }
 		}
 		letterCurrentPosX = initX;
 		letterCurrentPosY = initY;
 		text(randomLetter,initX,initY);
 	}
-	letterCurrentPosX = letterCurrentPosX + (endX-initX)/100;
+	letterCurrentPosX = letterCurrentPosX + (endX-initX)/100;      // reset 100 for letters' normal speed
 	letterCurrentPosY = letterCurrentPosY + (endY-initY)/100;
 	stroke(redVal,greenVal,blueVal);	
 	if (letterAlpha == 0) {
@@ -211,8 +226,8 @@ if (lettersGo == true) {
 	fill(redVal,greenVal,blueVal,letterAlpha);
 	text(randomLetter,letterCurrentPosX,letterCurrentPosY);		// wild letters flying across screen
 	//noFill();
-	//circle(letterCurrentPosX+textSize()/4,letterCurrentPosY-textSize()/4,100);		// bubble indicated desired targetable zone
-	//line(initX,initY,endX,endY);
+	//circle(letterCurrentPosX+textSize()/4,letterCurrentPosY-textSize()/4,100);		// bubble indicating desired targetable zone
+	//line(initX,initY,endX,endY);           // draws a visible line showing letter's path
 	
 	if ((t-fireTime < 8) && (mouseY < displayHeight*0.84)) {		// laser display
 		strokeWeight(1);
@@ -381,14 +396,20 @@ if (lettersGo == true) {
 
 function mousePressed() {
   fireTime = t;
-  //if (abs(letterCurrentPosX-mouseX) < 50 && abs(letterCurrentPosY-mouseY < 50) && (mouseY < displayHeight*0.84)  ) {		// old target zone
-  if (abs(letterCurrentPosX+textSize()/4-mouseX) < 50 && abs(letterCurrentPosY-textSize()/4-mouseY < 50) && (mouseY < displayHeight*0.84)  ) {
-	  letterAlpha = 0;
-	  capturedLetters = capturedLetters + randomLetter;
+  if (   abs(letterCurrentPosX+textSize()/4-mouseX) < 50 && abs(letterCurrentPosY-textSize()/4-mouseY) < 50 && (mouseY < displayHeight*0.84) && letterAlpha > 0 ) {   // if the cursor is close enough to a hit zone...
+	  letterAlpha = 0;     // make the letter transparent (because it's been zapped)
+	  capturedLetters = capturedLetters + randomLetter;    // add it to the list of captured letters
   }
-  if (  pow((mouseX-displayWidth*0.29),2) + pow((mouseY - displayHeight*0.93),2) < pow((displayHeight*0.035),2)   ) {
-	  lettersGo = true;
+  if (  pow((mouseX-displayWidth*0.29),2) + pow((mouseY - displayHeight*0.93),2) < pow((displayHeight*0.035),2)   ) {       // if the mouse cursor is on the START button...
+	  lettersGo = true;        // the game should begin! Wild letters can fly
 	  roundStartTime = t;
   }
-  laserSound.play();
+  if (lettersGo == true && t - roundStartTime > 10) {       // if a round has started (and it's been at least 10 drawing cycles since the round started)
+      if (Math.random() > 0.5) {
+          laserSound.play();
+      }
+      else {
+          blastSound.play();
+      }
+  }
 }
